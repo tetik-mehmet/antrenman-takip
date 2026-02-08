@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Antrenman Programı Yönetim Sistemi
 
-## Getting Started
+Spor salonu antrenman programlarını yönetmek için Next.js (App Router), MongoDB, JWT ve rol tabanlı yetkilendirme kullanan bir web uygulaması.
 
-First, run the development server:
+## Özellikler
+
+- **Kimlik doğrulama**: E-posta + şifre, JWT (httpOnly cookie), bcrypt ile hash
+- **Roller**: ADMIN ve USER
+- **Admin**: Kullanıcı listesi, tüm programlar, kullanıcılara program atama
+- **Kullanıcı**: Kendi programlarını görüntüleme ve oluşturma
+- **Program yapısı**: Başlık, günler, her günde egzersizler (isim, set, tekrar)
+
+## Gereksinimler
+
+- Node.js 18+
+- MongoDB (yerel veya Atlas)
+
+## Kurulum
+
+1. Bağımlılıklar yüklü (proje `create-next-app` ile oluşturulduysa hazır):
+
+```bash
+npm install
+```
+
+2. Ortam değişkenleri: `.env.example` dosyasını `.env.local` olarak kopyalayın ve değerleri doldurun:
+
+```bash
+cp .env.example .env.local
+```
+
+Örnek `.env.local`:
+
+```env
+MONGODB_URI=mongodb://localhost:27017/gym-app
+JWT_SECRET=your-super-secret-key-min-32-chars
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+3. Örnek veri (opsiyonel):
+
+```bash
+node scripts/seed.js
+```
+
+Bu komut bir ADMIN ve bir USER kullanıcısı ile 2 örnek program oluşturur:
+
+- **ADMIN**: admin@example.com / admin123
+- **USER**: user@example.com / user123
+
+4. Geliştirme sunucusu:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Tarayıcıda [http://localhost:3000](http://localhost:3000) açın. Giriş yapılmamışsa `/login` veya `/register` yönlendirilirsiniz.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Proje yapısı
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── (auth)/          # Giriş, kayıt
+│   ├── admin/           # Admin paneli
+│   ├── user/            # Kullanıcı paneli
+│   ├── api/             # API route'ları
+│   ├── layout.js
+│   └── page.js
+├── components/
+│   ├── ui/              # Button, Input, Card, Alert
+│   ├── forms/           # LoginForm, RegisterForm, ProgramForm
+│   └── layout/          # Header, Sidebar, DashboardLayout
+├── lib/
+│   ├── db.js            # MongoDB bağlantısı
+│   ├── auth.js          # JWT ve cookie yardımcıları
+│   ├── validation.js
+│   └── utils.js
+├── models/              # Mongoose User, TrainingProgram
+├── middleware.js        # Rota koruma ve yönlendirme
+└── types/               # Sabitler
+```
 
-## Learn More
+## Vercel ile deploy
 
-To learn more about Next.js, take a look at the following resources:
+1. Projeyi Vercel’e bağlayın.
+2. Ortam değişkenlerini ekleyin: `MONGODB_URI`, `JWT_SECRET`, `NEXT_PUBLIC_APP_URL`.
+3. Build komutu: `next build` (varsayılan).
+4. MongoDB Atlas kullanıyorsanız `MONGODB_URI` için connection string’i girin.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Lisans
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
