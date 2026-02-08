@@ -39,6 +39,7 @@ export default function AdminRequestsClient() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   async function handleStatusChange(requestId, newStatus) {
     setUpdatingId(requestId);
@@ -60,6 +61,28 @@ export default function AdminRequestsClient() {
       toast.error("Bağlantı hatası.");
     } finally {
       setUpdatingId(null);
+    }
+  }
+
+  async function handleDelete(requestId) {
+    if (!confirm("Bu talebi silmek istediğinize emin misiniz?")) return;
+    setDeletingId(requestId);
+    try {
+      const res = await fetch(`/api/program-requests/${requestId}`, {
+        method: "DELETE",
+        credentials: "same-origin",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message || "Talep silinemedi.");
+        return;
+      }
+      setRequests((prev) => prev.filter((r) => r._id !== requestId));
+      toast.success("Talep silindi");
+    } catch {
+      toast.error("Bağlantı hatası.");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -167,9 +190,22 @@ export default function AdminRequestsClient() {
                 <p className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
                   {req.notes}
                 </p>
-                <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                  {formatDate(req.createdAt)}
-                </p>
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {formatDate(req.createdAt)}
+                  </p>
+                  {req.status === "DONE" && (
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(req._id)}
+                      disabled={deletingId === req._id}
+                      className="rounded-lg border border-red-300 bg-red-50 px-2 py-1 text-xs font-medium text-red-700 transition hover:bg-red-100 disabled:opacity-50 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200 dark:hover:bg-red-900/50"
+                      aria-label="Talep sil"
+                    >
+                      {deletingId === req._id ? "Siliniyor..." : "Sil"}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </Card>

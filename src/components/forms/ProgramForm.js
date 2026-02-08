@@ -138,7 +138,7 @@ export default function ProgramForm({
             <option value="">Seçin</option>
             {targetUserOptions.map((u) => (
               <option key={u._id} value={u._id}>
-                {u.email} ({u.role})
+                {u.name || "İsimsiz"} ({u.role})
               </option>
             ))}
           </select>

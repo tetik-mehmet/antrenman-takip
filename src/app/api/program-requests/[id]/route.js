@@ -58,3 +58,34 @@ export async function PATCH(request, { params }) {
     );
   }
 }
+
+export async function DELETE(request, { params }) {
+  try {
+    const { role } = getAuthFromRequest(request);
+    if (role !== "ADMIN") {
+      return NextResponse.json(
+        { message: "Sadece admin talep silebilir." },
+        { status: 403 }
+      );
+    }
+
+    const { id } = await params;
+    await connectDB();
+    const deleted = await ProgramRequestModel.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return NextResponse.json(
+        { message: "Talep bulunamadı." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("Program request delete error:", err);
+    return NextResponse.json(
+      { message: "Talep silinirken hata oluştu." },
+      { status: 500 }
+    );
+  }
+}

@@ -4,6 +4,17 @@ import { useState, useEffect } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
+const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
+
+function getInitialCollapsed() {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
 export default function DashboardLayout({
   children,
   title,
@@ -12,6 +23,19 @@ export default function DashboardLayout({
   isAdmin,
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    setSidebarCollapsed(getInitialCollapsed());
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(sidebarCollapsed));
+    } catch {
+      // ignore
+    }
+  }, [sidebarCollapsed]);
 
   useEffect(() => {
     if (sidebarOpen) {
@@ -28,6 +52,11 @@ export default function DashboardLayout({
     setSidebarOpen(false);
   }
 
+  function toggleSidebarCollapsed() {
+    setSidebarCollapsed((c) => !c);
+    if (sidebarOpen) setSidebarOpen(false);
+  }
+
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-900">
       <Header
@@ -37,6 +66,8 @@ export default function DashboardLayout({
         isAdmin={isAdmin}
         onMenuToggle={() => setSidebarOpen((o) => !o)}
         sidebarOpen={sidebarOpen}
+        sidebarCollapsed={sidebarCollapsed}
+        onSidebarCollapseToggle={toggleSidebarCollapsed}
       />
       <div className="flex">
         {/* Overlay: mobilde sidebar açıkken arka plan, tıklanınca kapat */}
@@ -53,8 +84,10 @@ export default function DashboardLayout({
           isAdmin={isAdmin}
           isOpen={sidebarOpen}
           onClose={closeSidebar}
+          collapsed={sidebarCollapsed}
+          onCollapseToggle={toggleSidebarCollapsed}
         />
-        <main className="min-h-[calc(100vh-3.5rem)] flex-1 min-w-0 p-4 sm:p-6">
+        <main className="min-h-[calc(100vh-3.5rem)] flex-1 min-w-0 p-4 sm:p-6 transition-[margin] duration-200 ease-out">
           {children}
         </main>
       </div>

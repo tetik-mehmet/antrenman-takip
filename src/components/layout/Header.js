@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
+import ThemeToggle from "@/components/theme/ThemeToggle";
 
 export default function Header({
   title,
@@ -11,6 +12,8 @@ export default function Header({
   isAdmin,
   onMenuToggle,
   sidebarOpen,
+  sidebarCollapsed,
+  onSidebarCollapseToggle,
 }) {
   const router = useRouter();
   const name = userName?.trim();
@@ -26,7 +29,30 @@ export default function Header({
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95">
       <div className="mx-auto flex h-14 max-w-7xl min-w-0 items-center justify-between gap-2 px-4 sm:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          {/* Hamburger: sadece md altında */}
+          {/* Masaüstü: sidebar kapalıyken açma butonu */}
+          {sidebarCollapsed && onSidebarCollapseToggle && (
+            <button
+              type="button"
+              onClick={onSidebarCollapseToggle}
+              className="hidden md:flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+              aria-label="Kenar çubuğunu aç"
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          )}
+          {/* Hamburger: sadece md altında (mobil) */}
           {onMenuToggle && (
             <button
               type="button"
@@ -73,7 +99,8 @@ export default function Header({
             {title}
           </Link>
         </div>
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <ThemeToggle />
           <span
             className="hidden max-w-[180px] truncate text-sm text-slate-600 dark:text-slate-400 sm:block md:max-w-[280px] lg:max-w-none"
             title={userEmail}
@@ -83,7 +110,7 @@ export default function Header({
           <Button
             variant="ghost"
             onClick={handleLogout}
-            className="min-h-[44px]"
+            className="min-h-[44px] dark:text-red-500 dark:hover:bg-red-500/20 dark:hover:text-red-400"
           >
             Çıkış
           </Button>
