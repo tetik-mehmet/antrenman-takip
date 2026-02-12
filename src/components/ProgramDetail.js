@@ -19,9 +19,45 @@ export default function ProgramDetail({ program, canEdit, backHref }) {
   const [assignLoading, setAssignLoading] = useState(false);
   const [assignError, setAssignError] = useState("");
   const [assignSuccess, setAssignSuccess] = useState("");
+  const [movements, setMovements] = useState([]);
 
   const programId = program._id;
   const ownerId = program.userId?._id ? String(program.userId._id) : null;
+
+  function getEmbedUrl(url) {
+    if (!url) return "";
+    try {
+      const parsed = new URL(url);
+      const host = parsed.hostname.toLowerCase();
+
+      // YouTube klasik URL: https://www.youtube.com/watch?v=ID
+      if (host.includes("youtube.com")) {
+        const v = parsed.searchParams.get("v");
+        if (v) {
+          return `https://www.youtube.com/embed/${v}`;
+        }
+        // Zaten embed veya /shorts gibi durumlar
+        if (parsed.pathname.startsWith("/embed/")) {
+          return url;
+        }
+        if (parsed.pathname.startsWith("/shorts/")) {
+          const id = parsed.pathname.split("/").filter(Boolean).pop();
+          return id ? `https://www.youtube.com/embed/${id}` : url;
+        }
+      }
+
+      // Kısa YouTube URL: https://youtu.be/ID
+      if (host === "youtu.be") {
+        const id = parsed.pathname.split("/").filter(Boolean).pop();
+        return id ? `https://www.youtube.com/embed/${id}` : url;
+      }
+
+      // Diğer siteler için olduğu gibi bırak (site iframe'e izin vermeyebilir)
+      return url;
+    } catch {
+      return url;
+    }
+  }
 
   async function handleUpdate(payload) {
     const res = await fetch(`/api/training-programs/${programId}`, {
@@ -65,6 +101,20 @@ export default function ProgramDetail({ program, canEdit, backHref }) {
       .catch(() => setUsers([]))
       .finally(() => setUsersLoading(false));
   }, [assignModalOpen, canEdit]);
+
+  useEffect(() => {
+    // Kullanıcılar da hareketleri görebilsin diye sadece GET çağrısı yapıyoruz
+    fetch("/api/movements")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setMovements(data);
+        }
+      })
+      .catch(() => {
+        // Hata durumunda video göstermeden devam ederiz
+      });
+  }, []);
 
   function toggleUser(id) {
     setSelectedUserIds((prev) =>
@@ -281,19 +331,48 @@ export default function ProgramDetail({ program, canEdit, backHref }) {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
-                {(day.exercises || []).map((ex, exIndex) => (
-                  <li
-                    key={exIndex}
-                    className="flex flex-col gap-1 rounded border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-600 dark:bg-slate-800/50 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2"
-                  >
-                    <span className="font-medium text-slate-800 dark:text-slate-200">
-                      {ex.name || "Egzersiz"}
-                    </span>
-                    <span className="text-slate-600 dark:text-slate-400">
-                      {ex.sets} set × {ex.reps} tekrar
-                    </span>
-                  </li>
-                ))}
+                {(day.exercises || []).map((ex, exIndex) => {
+                  const displayName = ex.name || "Egzersiz";
+                  const movementMatch = movements.find((m) => {
+                    if (!m?.name) return false;
+                    return (
+                      m.name.trim().toLowerCase() ===
+                      (ex.name || "").trim().toLowerCase()
+                    );
+                  });
+                  const rawVideoUrl =
+                    ex.videoUrl || movementMatch?.videoUrl || "";
+                  const videoUrl = rawVideoUrl ? getEmbedUrl(rawVideoUrl) : "";
+
+                  return (
+                    <li
+                      key={exIndex}
+                      className="flex flex-col gap-2 rounded border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-600 dark:bg-slate-800/50 sm:flex-row sm:flex-wrap sm:items-start sm:gap-3"
+                    >
+                      <div className="flex flex-1 flex-col gap-1">
+                        <span className="font-medium text-slate-800 dark:text-slate-200">
+                          {displayName}
+                        </span>
+                        <span className="text-slate-600 dark:text-slate-400">
+                          {ex.sets} set × {ex.reps} tekrar
+                        </span>
+                      </div>
+                      {videoUrl && (
+                        <div className="w-full sm:w-64 md:w-72">
+                          <div className="relative aspect-video overflow-hidden rounded-lg border border-slate-200 bg-black/70 dark:border-slate-600">
+                            <iframe
+                              src={videoUrl}
+                              title={displayName || "Egzersiz videosu"}
+                              className="h-full w-full"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                              allowFullScreen
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </CardContent>
           </Card>

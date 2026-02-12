@@ -17,6 +17,7 @@ export default function Sidebar({
         { href: "/admin", label: "Dashboard" },
         { href: "/admin/users", label: "Kullanıcılar" },
         { href: "/admin/programs", label: "Programlar" },
+        { href: "/admin/hareketler", label: "Hareketler" },
         { href: "/admin/requests", label: "Talepler" },
         { href: "/admin/settings", label: "Ayarlar" },
       ]

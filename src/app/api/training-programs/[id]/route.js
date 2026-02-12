@@ -71,6 +71,8 @@ export async function PUT(request, { params }) {
           name: e.name || "",
           sets: Number(e.sets) || 1,
           reps: Number(e.reps) || 1,
+          movementId: e.movementId || undefined,
+          videoUrl: e.videoUrl || undefined,
         })),
       }));
     }

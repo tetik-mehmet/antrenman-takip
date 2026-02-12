@@ -7,6 +7,17 @@ const exerciseSchema = new mongoose.Schema(
     name: { type: String, required: true },
     sets: { type: Number, required: true, min: 1 },
     reps: { type: Number, required: true, min: 1 },
+    // Opsiyonel: Hareket kütüphanesi entegrasyonu
+    movementId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Movement",
+      required: false,
+    },
+    videoUrl: {
+      type: String,
+      required: false,
+      trim: true,
+    },
   },
   { _id: true }
 );
