@@ -13,15 +13,25 @@ export default function AdminHareketlerClient() {
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
   const [saving, setSaving] = useState(false);
-  const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ name: "", videoUrl: "" });
   const [filter, setFilter] = useState("");
   const [deletingId, setDeletingId] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingMovement, setEditingMovement] = useState(null);
+  const [editForm, setEditForm] = useState({ name: "", videoUrl: "" });
+  const [editFormError, setEditFormError] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
 
   function resetForm() {
     setForm({ name: "", videoUrl: "" });
-    setEditingId(null);
     setFormError("");
+  }
+
+  function closeEditModal() {
+    setEditModalOpen(false);
+    setEditingMovement(null);
+    setEditForm({ name: "", videoUrl: "" });
+    setEditFormError("");
   }
 
   async function loadMovements() {
@@ -67,10 +77,8 @@ export default function AdminHareketlerClient() {
 
     setSaving(true);
     try {
-      const method = editingId ? "PUT" : "POST";
-      const url = editingId ? `/api/movements/${editingId}` : "/api/movements";
-      const res = await fetch(url, {
-        method,
+      const res = await fetch("/api/movements", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, videoUrl }),
       });
@@ -80,9 +88,7 @@ export default function AdminHareketlerClient() {
         throw new Error(data.message || "Kayıt sırasında hata oluştu.");
       }
 
-      setFormSuccess(
-        editingId ? "Hareket güncellendi." : "Hareket başarıyla eklendi."
-      );
+      setFormSuccess("Hareket başarıyla eklendi.");
       resetForm();
       await loadMovements();
     } catch (err) {
@@ -92,14 +98,52 @@ export default function AdminHareketlerClient() {
     }
   }
 
-  async function handleEdit(movement) {
-    setEditingId(movement._id);
-    setForm({
+  function handleEditClick(movement) {
+    setEditingMovement(movement);
+    setEditForm({
       name: movement.name || "",
       videoUrl: movement.videoUrl || "",
     });
-    setFormError("");
-    setFormSuccess("");
+    setEditFormError("");
+    setEditModalOpen(true);
+  }
+
+  function handleEditFormChange(field, value) {
+    setEditForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleEditSubmit(e) {
+    e.preventDefault();
+    if (!editingMovement) return;
+    setEditFormError("");
+
+    const name = editForm.name.trim();
+    const videoUrl = editForm.videoUrl.trim();
+
+    if (!name || !videoUrl) {
+      setEditFormError("Hareket adı ve video URL zorunludur.");
+      return;
+    }
+
+    setEditSaving(true);
+    try {
+      const res = await fetch(`/api/movements/${editingMovement._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, videoUrl }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Güncelleme sırasında hata oluştu.");
+      }
+      closeEditModal();
+      await loadMovements();
+    } catch (err) {
+      setEditFormError(err.message || "Güncelleme sırasında hata oluştu.");
+    } finally {
+      setEditSaving(false);
+    }
   }
 
   async function handleDelete(id) {
@@ -178,29 +222,14 @@ export default function AdminHareketlerClient() {
                 required
               />
             </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              {editingId && (
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="text-sm text-slate-600 underline hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
-                >
-                  Düzenlemeyi iptal et
-                </button>
-              )}
-              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                <Button
-                  type="submit"
-                  disabled={saving}
-                  className="w-full sm:w-auto"
-                >
-                  {saving
-                    ? "Kaydediliyor..."
-                    : editingId
-                    ? "Hareketi güncelle"
-                    : "Hareket ekle"}
-                </Button>
-              </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+              <Button
+                type="submit"
+                disabled={saving}
+                className="w-full sm:w-auto"
+              >
+                {saving ? "Kaydediliyor..." : "Hareket ekle"}
+              </Button>
             </div>
           </form>
         </CardContent>
@@ -247,7 +276,7 @@ export default function AdminHareketlerClient() {
                     <Button
                       type="button"
                       variant="secondary"
-                      onClick={() => handleEdit(movement)}
+                      onClick={() => handleEditClick(movement)}
                       className="w-full sm:w-auto"
                     >
                       Düzenle
@@ -268,6 +297,70 @@ export default function AdminHareketlerClient() {
           )}
         </CardContent>
       </Card>
+
+      {editModalOpen && editingMovement && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-movement-modal-title"
+        >
+          <div
+            className="absolute inset-0 bg-slate-900/60 dark:bg-slate-950/70"
+            onClick={() => !editSaving && closeEditModal()}
+            aria-hidden="true"
+          />
+          <div className="relative z-10 w-full max-w-md rounded-xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-800">
+            <div className="border-b border-slate-200 px-4 py-3 dark:border-slate-700">
+              <h2
+                id="edit-movement-modal-title"
+                className="text-lg font-semibold text-slate-800 dark:text-slate-200"
+              >
+                Hareketi düzenle
+              </h2>
+            </div>
+            <form onSubmit={handleEditSubmit} className="p-4 space-y-4">
+              {editFormError && (
+                <Alert variant="error">{editFormError}</Alert>
+              )}
+              <Input
+                label="Hareket adı"
+                value={editForm.name}
+                onChange={(e) => handleEditFormChange("name", e.target.value)}
+                placeholder="Örn: Barbell Squat"
+                required
+              />
+              <Input
+                label="Video URL"
+                value={editForm.videoUrl}
+                onChange={(e) =>
+                  handleEditFormChange("videoUrl", e.target.value)
+                }
+                placeholder="Örn: https://youtube.com/..."
+                required
+              />
+              <div className="flex flex-col gap-2 border-t border-slate-200 pt-4 dark:border-slate-700 sm:flex-row sm:justify-end">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={closeEditModal}
+                  disabled={editSaving}
+                  className="w-full sm:w-auto"
+                >
+                  İptal
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={editSaving}
+                  className="w-full sm:w-auto"
+                >
+                  {editSaving ? "Kaydediliyor..." : "Güncelle"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
