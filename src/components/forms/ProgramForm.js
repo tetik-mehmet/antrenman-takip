@@ -104,88 +104,6 @@ export default function ProgramForm({
     });
   }
 
-  function moveExercise(dayIndex, fromIndex, toIndex) {
-    setDays((d) => {
-      return d.map((day, i) => {
-        if (i !== dayIndex) return day;
-        const exercises = [...day.exercises];
-        const [movedExercise] = exercises.splice(fromIndex, 1);
-        exercises.splice(toIndex, 0, movedExercise);
-        return { ...day, exercises };
-      });
-    });
-  }
-
-  function handleDragStart(e, dayIndex, exIndex) {
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData(
-      "text/plain",
-      JSON.stringify({ dayIndex, exIndex })
-    );
-    e.currentTarget.style.opacity = "0.4";
-  }
-
-  function handleDragEnd(e) {
-    e.currentTarget.style.opacity = "1";
-  }
-
-  function handleDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-  }
-
-  function handleDrop(e, dayIndex, exIndex) {
-    e.preventDefault();
-    const data = e.dataTransfer.getData("text/plain");
-    if (!data) return;
-
-    const { dayIndex: fromDayIndex, exIndex: fromExIndex } = JSON.parse(data);
-
-    // Sadece aynı gün içinde sürüklemeye izin ver
-    if (fromDayIndex === dayIndex && fromExIndex !== exIndex) {
-      moveExercise(dayIndex, fromExIndex, exIndex);
-    }
-  }
-
-  function moveDay(fromIndex, toIndex) {
-    setDays((d) => {
-      const next = [...d];
-      const [movedDay] = next.splice(fromIndex, 1);
-      next.splice(toIndex, 0, movedDay);
-      return next;
-    });
-  }
-
-  function handleDayDragStart(e, dayIndex) {
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", JSON.stringify({ dayIndex }));
-    e.currentTarget.style.opacity = "0.4";
-  }
-
-  function handleDayDragEnd(e) {
-    e.currentTarget.style.opacity = "1";
-  }
-
-  function handleDayDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-  }
-
-  function handleDayDrop(e, dayIndex) {
-    e.preventDefault();
-    e.stopPropagation();
-    const data = e.dataTransfer.getData("text/plain");
-    if (!data) return;
-
-    const parsed = JSON.parse(data);
-    // Gün sürükleme (exIndex yok)
-    if (parsed.exIndex === undefined && parsed.dayIndex !== undefined) {
-      const fromDayIndex = parsed.dayIndex;
-      if (fromDayIndex !== dayIndex) {
-        moveDay(fromDayIndex, dayIndex);
-      }
-    }
-  }
 
   useEffect(() => {
     async function loadMovements() {
@@ -348,28 +266,9 @@ export default function ProgramForm({
         {days.map((day, dayIndex) => (
           <Card
             key={dayIndex}
-            draggable
-            onDragStart={(e) => handleDayDragStart(e, dayIndex)}
-            onDragEnd={handleDayDragEnd}
-            onDragOver={handleDayDragOver}
-            onDrop={(e) => handleDayDrop(e, dayIndex)}
-            className="cursor-move hover:shadow-lg hover:scale-[1.01] transition-all"
           >
             <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex w-full items-center gap-2 sm:flex-1">
-                <svg
-                  className="h-6 w-6 flex-shrink-0 text-slate-400 dark:text-slate-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 8h16M4 16h16"
-                  />
-                </svg>
                 <Input
                   placeholder="Gün adı (örn: Pazartesi)"
                   value={day.dayName}
@@ -391,28 +290,8 @@ export default function ProgramForm({
               {(day.exercises || []).map((ex, exIndex) => (
                 <div
                   key={exIndex}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, dayIndex, exIndex)}
-                  onDragEnd={handleDragEnd}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, dayIndex, exIndex)}
-                  className="flex flex-col gap-2 rounded-lg border border-slate-200 p-3 dark:border-slate-600 sm:flex-row sm:flex-wrap sm:items-end cursor-move hover:border-blue-300 hover:bg-blue-50/50 dark:hover:border-blue-600 dark:hover:bg-blue-900/10 transition-all"
+                  className="flex flex-col gap-2 rounded-lg border border-slate-200 p-3 dark:border-slate-600 sm:flex-row sm:flex-wrap sm:items-end"
                 >
-                  <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 self-start sm:self-center">
-                    <svg
-                      className="h-5 w-5 flex-shrink-0"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4 8h16M4 16h16"
-                      />
-                    </svg>
-                  </div>
                   <div className="flex w-full flex-col gap-2 sm:flex-1">
                     <Input
                       placeholder="Egzersiz adı"
