@@ -345,24 +345,24 @@ export default function ProgramForm({
 
       {movementPicker.open && (
         <div
-          className="fixed inset-0 z-40 flex items-center justify-center p-4"
+          className="fixed inset-0 z-40 flex items-center justify-center p-4 animate-fade-in"
           role="dialog"
           aria-modal="true"
         >
           <div
-            className="absolute inset-0 bg-slate-900/60 dark:bg-slate-950/70"
+            className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm dark:bg-slate-950/80"
             onClick={closeMovementPicker}
             aria-hidden="true"
           />
-          <div className="relative z-10 w-full max-w-lg rounded-xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-800">
-            <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
-              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+          <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/20 bg-white/95 backdrop-blur-xl shadow-2xl animate-scale-in dark:border-slate-700/50 dark:bg-slate-800/95">
+            <div className="flex items-center justify-between border-b border-slate-200/60 px-4 py-3 dark:border-slate-700/60">
+              <h2 className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-cyan-400">
                 Hareket seç
               </h2>
               <button
                 type="button"
                 onClick={closeMovementPicker}
-                className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+                className="rounded-lg p-1.5 text-slate-500 transition-all hover:bg-blue-50 hover:text-blue-700 hover:scale-110 dark:text-slate-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                 aria-label="Kapat"
               >
                 <svg
@@ -404,17 +404,17 @@ export default function ProgramForm({
                 </p>
               ) : (
                 <ul className="space-y-2">
-                  {filteredMovements.map((m) => (
-                    <li key={m._id}>
+                  {filteredMovements.map((m, index) => (
+                    <li key={m._id} className="animate-slide-in-up" style={{ animationDelay: `${index * 30}ms` }}>
                       <button
                         type="button"
                         onClick={() => applyMovementToExercise(m)}
-                        className="flex w-full flex-col items-start gap-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800/60 dark:hover:bg-slate-700"
+                        className="group flex w-full flex-col items-start gap-1 rounded-lg border border-slate-200/60 bg-white/80 backdrop-blur-sm px-3 py-2.5 text-left text-sm transition-all hover:border-blue-300 hover:bg-blue-50 hover:shadow-md hover:-translate-y-0.5 dark:border-slate-600/60 dark:bg-slate-800/80 dark:hover:border-blue-600 dark:hover:bg-slate-700"
                       >
-                        <span className="font-medium text-slate-800 dark:text-slate-100">
+                        <span className="font-medium text-slate-800 group-hover:text-blue-700 transition-colors dark:text-slate-100 dark:group-hover:text-blue-400">
                           {m.name}
                         </span>
-                        <span className="break-all text-xs text-slate-600 dark:text-slate-300">
+                        <span className="break-all text-xs text-slate-600 dark:text-slate-400">
                           {m.videoUrl}
                         </span>
                       </button>

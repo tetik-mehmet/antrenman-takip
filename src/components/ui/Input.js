@@ -60,11 +60,11 @@ export default function Input({
   const inputType = isPassword && showPassword ? "text" : type;
 
   const baseInputClasses =
-    "w-full min-h-[44px] rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-offset-0 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-offset-zinc-900";
+    "w-full min-h-[44px] rounded-lg border bg-white px-3 py-2.5 text-base text-slate-900 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:bg-slate-800 dark:text-slate-100";
   const defaultFocus =
-    "focus:border-slate-500 focus:ring-slate-500 dark:focus:border-slate-400 dark:focus:ring-slate-400";
+    "border-slate-300 focus:border-blue-500 focus:ring-blue-500/50 hover:border-slate-400 dark:border-slate-600 dark:focus:border-blue-400 dark:focus:ring-blue-400/50 dark:hover:border-slate-500";
   const errorFocus =
-    "border-red-500 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:focus:border-red-500 dark:focus:ring-red-500";
+    "border-red-500 focus:border-red-500 focus:ring-red-500/50 dark:border-red-500 dark:focus:border-red-500 dark:focus:ring-red-500/50";
   const withPadding = showToggle ? "pr-11" : "";
 
   const inputEl = (
@@ -100,7 +100,7 @@ export default function Input({
           <button
             type="button"
             onClick={onToggleShowPassword}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-zinc-400 transition hover:bg-zinc-700/50 hover:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#FFD41D]/50 focus:ring-offset-0 focus:ring-offset-zinc-900"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-slate-400 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 dark:text-slate-500 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
             tabIndex={-1}
             title={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
             aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}

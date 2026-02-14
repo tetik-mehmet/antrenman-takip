@@ -26,7 +26,9 @@ export default function Header({
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95">
+    <header className="sticky top-0 z-30 border-b border-blue-100/50 bg-white/80 backdrop-blur-lg dark:border-blue-900/30 dark:bg-slate-900/80 transition-all duration-300">
+      {/* Gradient accent line */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50" />
       <div className="mx-auto flex h-14 max-w-7xl min-w-0 items-center justify-between gap-2 px-4 sm:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           {/* Masaüstü: sidebar kapalıyken açma butonu */}
@@ -34,7 +36,7 @@ export default function Header({
             <button
               type="button"
               onClick={onSidebarCollapseToggle}
-              className="hidden md:flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="hidden md:flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 dark:text-slate-300 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
               aria-label="Kenar çubuğunu aç"
             >
               <svg
@@ -57,7 +59,7 @@ export default function Header({
             <button
               type="button"
               onClick={onMenuToggle}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 md:hidden"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 dark:text-slate-300 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 md:hidden"
               aria-label={sidebarOpen ? "Menüyü kapat" : "Menüyü aç"}
               aria-expanded={sidebarOpen}
             >
@@ -94,23 +96,30 @@ export default function Header({
           )}
           <Link
             href={isAdmin ? "/admin" : "/user"}
-            className="min-w-0 truncate text-lg font-semibold text-slate-800 dark:text-slate-200"
+            className="min-w-0 truncate text-lg font-semibold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-cyan-400 hover:from-blue-700 hover:to-cyan-700 dark:hover:from-blue-300 dark:hover:to-cyan-300 transition-all duration-200"
           >
             {title}
           </Link>
         </div>
-        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-3">
           <ThemeToggle />
-          <span
-            className="hidden max-w-[180px] truncate text-sm text-slate-600 dark:text-slate-400 sm:block md:max-w-[280px] lg:max-w-none"
-            title={userEmail}
-          >
-            {displayText}
-          </span>
+          <div className="hidden items-center gap-2 sm:flex">
+            {/* User Avatar */}
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 text-xs font-bold text-white shadow-md animate-pulse-glow">
+              {name?.charAt(0)?.toUpperCase() || userEmail?.charAt(0)?.toUpperCase() || "?"}
+            </div>
+            <span
+              className="hidden max-w-[180px] truncate text-sm font-medium text-slate-700 dark:text-slate-300 md:block md:max-w-[280px] lg:max-w-none"
+              title={userEmail}
+            >
+              {displayText}
+            </span>
+          </div>
           <Button
             variant="ghost"
+            size="sm"
             onClick={handleLogout}
-            className="min-h-[44px] dark:text-red-500 dark:hover:bg-red-500/20 dark:hover:text-red-400"
+            className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
           >
             Çıkış
           </Button>

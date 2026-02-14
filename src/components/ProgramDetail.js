@@ -157,13 +157,13 @@ export default function ProgramDetail({ program, canEdit, backHref }) {
 
   if (editing) {
     return (
-      <Card>
+      <Card variant="glass" className="animate-scale-in">
         <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+          <h2 className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-cyan-400">
             Programı düzenle
           </h2>
           <Button
-            variant="secondary"
+            variant="tertiary"
             onClick={() => setEditing(false)}
             className="w-full sm:w-auto"
           >
@@ -183,21 +183,23 @@ export default function ProgramDetail({ program, canEdit, backHref }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fade-in">
       {!canEdit && (
         <div
-          className="flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 dark:border-amber-600 dark:bg-amber-950/40"
+          className="flex items-center gap-3 rounded-xl border border-blue-300 bg-blue-50/80 backdrop-blur-sm px-4 py-3 shadow-md dark:border-blue-600 dark:bg-blue-950/40 animate-slide-in-up"
           role="alert"
         >
-          <span className="text-amber-600 dark:text-amber-400" aria-hidden>
-            !
-          </span>
-          <p className="text-sm font-medium text-amber-800 animate-blink dark:text-amber-200">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/40">
+            <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
             PT tarafından atanan programlarda düzenleme yapılamaz!
           </p>
         </div>
       )}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 animate-slide-in-up" style={{ animationDelay: "100ms" }}>
         {canEdit && (
           <>
             <Button onClick={() => setEditing(true)}>Düzenle</Button>
@@ -323,14 +325,20 @@ export default function ProgramDetail({ program, canEdit, backHref }) {
       )}
       <div className="space-y-4">
         {(program.days || []).map((day, dayIndex) => (
-          <Card key={dayIndex}>
+          <Card 
+            key={dayIndex} 
+            variant="glass" 
+            hoverable
+            className="animate-slide-in-up"
+            style={{ animationDelay: `${200 + dayIndex * 50}ms` }}
+          >
             <CardHeader>
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200">
+              <h3 className="font-semibold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-cyan-400">
                 {day.dayName || `Gün ${dayIndex + 1}`}
               </h3>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {(day.exercises || []).map((ex, exIndex) => {
                   const displayName = ex.name || "Egzersiz";
                   const movementMatch = movements.find((m) => {
@@ -347,19 +355,30 @@ export default function ProgramDetail({ program, canEdit, backHref }) {
                   return (
                     <li
                       key={exIndex}
-                      className="flex flex-col gap-2 rounded border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-600 dark:bg-slate-800/50 sm:flex-row sm:flex-wrap sm:items-start sm:gap-3"
+                      className="group flex flex-col gap-3 rounded-xl border border-slate-200/60 bg-white/80 backdrop-blur-sm px-4 py-3 shadow-sm transition-all duration-200 hover:border-blue-300 hover:shadow-md hover:-translate-y-0.5 dark:border-slate-600/60 dark:bg-slate-800/80 dark:hover:border-blue-600 sm:flex-row sm:flex-wrap sm:items-start"
                     >
-                      <div className="flex flex-1 flex-col gap-1">
-                        <span className="font-medium text-slate-800 dark:text-slate-200">
+                      <div className="flex flex-1 flex-col gap-1.5">
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">
                           {displayName}
                         </span>
-                        <span className="text-slate-600 dark:text-slate-400">
-                          {ex.sets} set × {ex.reps} tekrar
-                        </span>
+                        <div className="flex items-center gap-4 text-sm">
+                          <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                            </svg>
+                            <span className="font-medium">{ex.sets} set</span>
+                          </span>
+                          <span className="flex items-center gap-1 text-cyan-600 dark:text-cyan-400">
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                            <span className="font-medium">{ex.reps} tekrar</span>
+                          </span>
+                        </div>
                       </div>
                       {videoUrl && (
                         <div className="w-full sm:w-64 md:w-72">
-                          <div className="relative aspect-video overflow-hidden rounded-lg border border-slate-200 bg-black/70 dark:border-slate-600">
+                          <div className="relative aspect-video overflow-hidden rounded-lg border border-blue-200/50 bg-black/70 shadow-lg group-hover:shadow-xl group-hover:border-blue-300 transition-all dark:border-blue-800/50">
                             <iframe
                               src={videoUrl}
                               title={displayName || "Egzersiz videosu"}

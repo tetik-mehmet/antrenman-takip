@@ -86,16 +86,16 @@ export default function ThemeToggle() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+        className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600 hover:scale-110 dark:text-slate-300 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
         aria-label="Tema seç"
         aria-expanded={open}
         aria-haspopup="true"
       >
-        <CurrentIcon className="h-5 w-5" />
+        <CurrentIcon className="h-5 w-5 transition-transform hover:rotate-12" />
       </button>
       {open && (
         <div
-          className="absolute right-0 top-full z-50 mt-1 min-w-[160px] overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+          className="absolute right-0 top-full z-50 mt-2 min-w-[160px] overflow-hidden rounded-xl border border-white/20 bg-white/95 backdrop-blur-xl py-1 shadow-2xl animate-scale-in dark:border-slate-700/50 dark:bg-slate-800/95"
           role="menu"
           aria-orientation="vertical"
         >
@@ -111,17 +111,17 @@ export default function ThemeToggle() {
                   setTheme(t.value);
                   setOpen(false);
                 }}
-                className={`flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm transition ${
+                className={`group flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-all ${
                   active
-                    ? "bg-slate-100 text-slate-900 dark:bg-slate-700 dark:text-slate-100"
-                    : "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50"
+                    ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md"
+                    : "text-slate-700 hover:bg-blue-50 hover:translate-x-1 dark:text-slate-300 dark:hover:bg-blue-900/20"
                 }`}
               >
-                <Icon className="h-4 w-4 shrink-0" />
-                <span>{t.label}</span>
+                <Icon className={`h-5 w-5 shrink-0 transition-transform ${active ? "scale-110" : "group-hover:scale-110"}`} />
+                <span className="font-medium">{t.label}</span>
                 {active && (
                   <svg
-                    className="ml-auto h-4 w-4 text-indigo-600 dark:text-indigo-400"
+                    className="ml-auto h-4 w-4 animate-bounce"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
