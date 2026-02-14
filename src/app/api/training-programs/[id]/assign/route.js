@@ -58,6 +58,12 @@ export async function POST(request, { params }) {
     const existingIds = new Set(existingUsers.map((u) => u._id.toString()));
     const ownerIdStr = program.userId ? String(program.userId) : null;
 
+    function normalizeReps(v) {
+      if (v == null) return "1";
+      const s = String(v).trim();
+      return s || "1";
+    }
+
     const toCreate = validIds.filter(
       (tid) => existingIds.has(tid) && tid !== ownerIdStr
     );
@@ -83,7 +89,7 @@ export async function POST(request, { params }) {
           exercises: (d.exercises || []).map((e) => ({
             name: e.name || "",
             sets: Number(e.sets) || 1,
-            reps: Number(e.reps) || 1,
+            reps: normalizeReps(e.reps),
           })),
         })),
       }))

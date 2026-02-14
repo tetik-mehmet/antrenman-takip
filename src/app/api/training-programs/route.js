@@ -63,6 +63,12 @@ export async function POST(request) {
     const programUserId =
       role === "ADMIN" && targetUserId ? targetUserId : userId;
 
+    function normalizeReps(v) {
+      if (v == null) return "1";
+      const s = String(v).trim();
+      return s || "1";
+    }
+
     await connectDB();
     const program = await TrainingProgram.create({
       title,
@@ -73,7 +79,7 @@ export async function POST(request) {
         exercises: (d.exercises || []).map((e) => ({
           name: e.name || "",
           sets: Number(e.sets) || 1,
-          reps: Number(e.reps) || 1,
+          reps: normalizeReps(e.reps),
           movementId: e.movementId || undefined,
           videoUrl: e.videoUrl || undefined,
         })),

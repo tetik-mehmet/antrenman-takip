@@ -8,9 +8,22 @@ import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 
 const emptyDay = () => ({
   dayName: "",
-  exercises: [{ name: "", sets: 3, reps: 12 }],
+  exercises: [{ name: "", sets: 3, reps: "12" }],
 });
-const emptyExercise = () => ({ name: "", sets: 3, reps: 12 });
+const emptyExercise = () => ({ name: "", sets: 3, reps: "12" });
+
+function normalizeReps(value) {
+  if (value == null) return "1";
+  const s = String(value).trim();
+  if (!s) return "1";
+  return s;
+}
+
+function isValidReps(value) {
+  if (!value) return false;
+  const s = String(value).trim();
+  return /^\d+$/.test(s) || /^\d+\s*-\s*\d+$/.test(s);
+}
 
 export default function ProgramForm({
   initialTitle = "",
@@ -251,6 +264,16 @@ export default function ProgramForm({
       setError("Program başlığı girin.");
       return;
     }
+    for (const day of days) {
+      for (const ex of day.exercises || []) {
+        if (!isValidReps(ex.reps)) {
+          setError(
+            `Geçersiz tekrar formatı: "${ex.reps || ""}". Sabit (12) veya aralık (10-12) girin.`
+          );
+          return;
+        }
+      }
+    }
     const payload = {
       title: title.trim(),
       days: days.map((day) => ({
@@ -258,7 +281,7 @@ export default function ProgramForm({
         exercises: (day.exercises || []).map((e) => ({
           name: e.name || "Egzersiz",
           sets: Number(e.sets) || 1,
-          reps: Number(e.reps) || 1,
+          reps: normalizeReps(e.reps),
           movementId: e.movementId || undefined,
           videoUrl: e.videoUrl || undefined,
         })),
@@ -432,14 +455,14 @@ export default function ProgramForm({
                       className="w-full sm:w-20"
                     />
                     <Input
-                      placeholder="Tekrar"
-                      type="number"
-                      min={1}
-                      value={ex.reps}
+                      placeholder="12 veya 10-12"
+                      type="text"
+                      value={ex.reps != null ? String(ex.reps) : ""}
                       onChange={(e) =>
                         setExercise(dayIndex, exIndex, "reps", e.target.value)
                       }
-                      className="w-full sm:w-20"
+                      className="w-full sm:w-24"
+                      aria-label="Tekrar sayısı: sabit (12) veya aralık (10-12)"
                     />
                   </div>
                   <Button

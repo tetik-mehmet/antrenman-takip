@@ -62,6 +62,12 @@ export async function PUT(request, { params }) {
     const body = await request.json();
     const { title, days } = body;
 
+    function normalizeReps(v) {
+      if (v == null) return "1";
+      const s = String(v).trim();
+      return s || "1";
+    }
+
     const update = {};
     if (title !== undefined) update.title = title;
     if (Array.isArray(days)) {
@@ -70,7 +76,7 @@ export async function PUT(request, { params }) {
         exercises: (d.exercises || []).map((e) => ({
           name: e.name || "",
           sets: Number(e.sets) || 1,
-          reps: Number(e.reps) || 1,
+          reps: normalizeReps(e.reps),
           movementId: e.movementId || undefined,
           videoUrl: e.videoUrl || undefined,
         })),

@@ -63,8 +63,8 @@ export default async function UserDashboardPage() {
             </div>
           </div>
           <div className="group relative overflow-hidden rounded-2xl border-2 border-white/50 bg-gradient-to-br from-blue-500 to-indigo-600 p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/40 hover:scale-105 animate-slide-in-up" style={{ animationDelay: "250ms" }}>
-            <div className="absolute -top-3 -right-3">
-              <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-bold text-blue-600 shadow-lg animate-bounce">
+            <div className="absolute top-3 right-3 z-10">
+              <span className="inline-flex rounded-full bg-white px-3.5 py-1.5 text-sm font-bold uppercase tracking-wide text-blue-600 shadow-xl ring-2 ring-blue-500/30 animate-bounce">
                 Popüler
               </span>
             </div>

@@ -6,7 +6,23 @@ const exerciseSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     sets: { type: Number, required: true, min: 1 },
-    reps: { type: Number, required: true, min: 1 },
+    // Sabit (12) veya aralık (10-12) olabilir
+    reps: {
+      type: String,
+      required: true,
+      trim: true,
+      validate: {
+        validator(v) {
+          if (!v) return false;
+          const s = String(v).trim();
+          if (!s) return false;
+          const single = /^\d+$/.test(s);
+          const range = /^\d+\s*-\s*\d+$/.test(s);
+          return single || range;
+        },
+        message: "Tekrar: sabit sayı (12) veya aralık (10-12) girin.",
+      },
+    },
     // Opsiyonel: Hareket kütüphanesi entegrasyonu
     movementId: {
       type: mongoose.Schema.Types.ObjectId,
