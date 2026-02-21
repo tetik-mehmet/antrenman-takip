@@ -26,7 +26,7 @@ export async function GET(request) {
     // ADMIN without userId = all programs
 
     const programs = await TrainingProgram.find(query)
-      .populate("userId", "name email")
+      .populate("userId", "name email role")
       .sort({ updatedAt: -1 })
       .lean();
 
@@ -87,7 +87,7 @@ export async function POST(request) {
     });
 
     const populated = await TrainingProgram.findById(program._id)
-      .populate("userId", "name email")
+      .populate("userId", "name email role")
       .lean();
 
     return NextResponse.json(populated, { status: 201 });

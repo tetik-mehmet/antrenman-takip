@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import ThemeToggle from "@/components/theme/ThemeToggle";
+import AdminRequestsNotification from "@/components/layout/AdminRequestsNotification";
 
 export default function Header({
   title,
@@ -103,6 +104,7 @@ export default function Header({
         </div>
         <div className="flex shrink-0 items-center gap-1 sm:gap-3">
           <ThemeToggle />
+          {isAdmin && <AdminRequestsNotification />}
           <div className="hidden items-center gap-2 sm:flex">
             {/* User Avatar */}
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 text-xs font-bold text-white shadow-md animate-pulse-glow">

@@ -15,6 +15,16 @@ export async function GET(request) {
 
     await connectDB();
 
+    const url = new URL(request.url);
+    const countOnly = url.searchParams.get("countOnly") === "true";
+
+    if (countOnly && role === "ADMIN") {
+      const count = await ProgramRequestModel.countDocuments({
+        status: "PENDING",
+      });
+      return NextResponse.json({ count });
+    }
+
     let query = {};
     if (role === "USER") {
       query.userId = userId;
